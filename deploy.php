@@ -64,6 +64,7 @@ if ($event === 'push') {
         exec("git config --global --add safe.directory $repoPath");
         // 拉取
         exec("git pull");
+        sleep(5);
         // exec("cd $repoPath && git pull 2>&1", $output, $return_var);
         exec("cd $repoPath && git merge --no-ff -m \"deploy merge\" 2>&1", $output, $return_var);
     } else {
