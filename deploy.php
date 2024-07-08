@@ -5,8 +5,7 @@ ini_set('display_errors', 1);
 
 // 日志文件路径
 $logFile = __DIR__ . '/webhook.log';
-$rootPath = '/home/wwwroot/121.40.22.253/wp-content/themes/html5blank-stable'
-
+$rootPath = '/home/wwwroot/121.40.22.253/wp-content/themes/html5blank-stable';
 // 记录日志函数
 function logMessage($message) {
     global $logFile;
@@ -16,7 +15,7 @@ function logMessage($message) {
 
 // 获取 GitHub Webhook 请求内容
 $payload = file_get_contents('php://input');
-$event = $_SERVER['X-GitHub-Event'] ?? '';
+$event = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? 'none event';
 
 // GitHub Webhook Secret
 $secret = '77742335'; // 将此替换为您的实际 secret
@@ -30,27 +29,30 @@ if ($event === 'push') {
     logMessage('Generated Signature: ' . $signature);
     logMessage('GitHub Signature: ' . $githubSignature);
 
-    if (!hash_equals($signature, $githubSignature)) {
-        http_response_code(403);
-        logMessage('Invalid signature');
-        die('Invalid signature');
-    }
+    // print_r($signature.'\n');
+    // print_r($githubSignature);
+
+    // if (!hash_equals($signature, $githubSignature)) {
+    //     http_response_code(403);
+    //     logMessage('Invalid signature');
+    //     die('Invalid signature');
+    // }
 
     // 解析 application/x-www-form-urlencoded 格式的数据
-    parse_str($payload, $data);
-    if (empty($data)) {
-        http_response_code(400);
-        logMessage('Failed to decode payload');
-        die('Failed to decode payload');
-    }
+    // parse_str($payload, $data);
+    // if (empty($data)) {
+    //     http_response_code(400);
+    //     logMessage('Failed to decode payload');
+    //     die('Failed to decode payload');
+    // }
 
-    // 仓库名称
-    $repoName = $data['repository']['name'] ?? '';
-    if (empty($repoName)) {
-        http_response_code(400);
-        logMessage('Repository name not found in payload');
-        die('Repository name not found in payload');
-    }
+    // // 仓库名称
+    // $repoName = $data['repository']['name'] ?? '';
+    // if (empty($repoName)) {
+    //     http_response_code(400);
+    //     logMessage('Repository name not found in payload');
+    //     die('Repository name not found in payload');
+    // }
 
     // 执行 git pull 命令
     $output = [];
@@ -81,4 +83,3 @@ if ($event === 'push') {
     logMessage('Only push events are handled');
     echo 'Only push events are handled';
 }
-?>
